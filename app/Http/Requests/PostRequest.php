@@ -23,7 +23,7 @@ class PostRequest extends FormRequest
     {
         return [
             'title' => 'required|max:20|min:3|unique:posts',
-            'body' => 'required|max:1000|min:3|unique:posts',
+            'body' => 'required|max:1000|min:3|unique:posts', // dont use unique for title and body
             'picture' => 'required|image|unique:posts,picture',
             // 'category_id' => 'required|integer',
         ];

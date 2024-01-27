@@ -17,7 +17,7 @@ class UserResource extends JsonResource
         // return parent::toArray($request);
         return [
             "id"=> $this->id,
-            "name"=> strtoupper($this->name),
+            "name"=> strtoupper($this->name), // use Laravel Str helpers
             "email"=> $this->email,
             "image"=> $this->image,
             "role"=> $this->role,

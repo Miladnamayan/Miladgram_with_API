@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class ApiController extends Controller
 {
+    // why do you use this controller?!
 //    use ApiResponser;
 protected function SuccessResponse($data,$message=null,$code){
     return response()->json([

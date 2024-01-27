@@ -36,29 +36,29 @@ class AuthorController extends ApiController
 
     }
 
- 
+
 
 
     /**
      * Update the specified resource in storage.
      */
+    // use a custom request or a validation for this request
     public function update(Request $request, post $post)
     {
         // dd($post);
-        // dd($request);
+        // dd($request->all());
         $pictureName=Carbon::now()->microsecond .'.' . $request->picture->extension();
+        // its better to use a constant for picture/posts string
         $request->picture->storeAs('picture/posts',$pictureName,'public');
 
-        if (Gate::allows('delete', $post)) {
-            $post->Update([
-                'title'=>  $request->has('title')? $request->get('title') : $post->title,
-                'body'=> $request->has('body')  ? $request->get('body') : $post->body,
-                'picture'=> $request->has('picture')? $pictureName : $post->picture,
-            ]);
-            return $this->SuccessResponse(new PostResource($post),'Update Post Successful',200);
-        } else {
-            return $this->ErrorResponse('Only the post creator can Update this post',401);
-        }
+        $this->authorize('update', $post);
+
+        $post->update([
+            'title'=>  $request->has('title')? $request->get('title') : $post->title,
+            'body'=> $request->has('body')  ? $request->get('body') : $post->body,
+            'picture'=> $request->has('picture')? $pictureName : $post->picture,
+        ]);
+        return $this->SuccessResponse(new PostResource($post),'Update Post Successful',200);
     }
 
     /**
@@ -66,6 +66,8 @@ class AuthorController extends ApiController
      */
     public function delete(post $post)
     {
+        // use policy
+        // don't use else if you use return in your if statement
         if (Gate::allows('delete', $post)) {
             $post->delete();
             return $this->SuccessResponse(new PostResource($post),'Delete Post Successful',200);
@@ -78,7 +80,8 @@ class AuthorController extends ApiController
 
     public function Permission(post $post)
     {
-
+        // use policy
+        // don't use else if you use return in your if statement
         if (Gate::allows('update', $post)) {
             if ($post) {
                 $post->post_status = $post->post_status ? 0 : 1;

@@ -23,12 +23,13 @@ class PostResource extends JsonResource
             'title'=>strtoupper($this->title),
             'body'=>$this->body,
             'picture'=>$this->picture,
-            'Number_of_likes' => $this->likes->count(),
-            'Number_of_comments' => $this->comments->count(),
+            'Number_of_likes' => $this->whenCounted('likes'),
+            'Number_of_comments' =>  $this->whenCounted('comments'),
             'user_id'=>$this->user_id,
             'category_id'=>$this->category_id,
             'created_at'=>$this->created_at->format('Y-m-d'),
             'updated_at'=>$this->updated_at->format('Y-m-d'),
+            'comments'=> $this->whenLoaded('comments')
         ];
     }
     public function with(Request $request)

@@ -6,24 +6,23 @@ use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
 Route::prefix('miladgram')->group(function(){
 
     Route::post('/Register', [RegisterController::class, 'Register'])->name('Register');
-    Route::post('/Login', [LoginController::class, 'Login'])->middleware('auth:sanctum')->name('Login');
+    Route::post('/Login', [LoginController::class, 'Login'])->name('Login');
     Route::post('/Logout', [LogoutController::class, 'Logout'])->middleware('auth:sanctum')->name('Logout');
 
-    Route::prefix('Admin')->name('Admin.')->controller(UserController::class)->middleware('auth:sanctum','admin')->group(function(){
+    Route::prefix('Users')->name('Users.')->controller(UserController::class)->middleware('auth:sanctum','admin')->group(function(){
         Route::get('/', 'List')->name('List');
         Route::delete('/{user}', 'Delete')->name('Delete');
         Route::post('/{user}', 'Accept')->name('Accept');
-
     });
 
     Route::prefix('posts')->name('posts.')->middleware('auth:sanctum')->group(function(){
+        //is it true?!  posts/Author/...
         Route::prefix('Author')->name('Author.')->controller(AuthorController::class)->middleware('Author')->group(function(){
             Route::post('/', 'Create')->name('Create');
             Route::put('/{post}', 'Update')->name('Update');
@@ -34,8 +33,8 @@ Route::prefix('miladgram')->group(function(){
         Route::prefix('Public')->name('Public.')->controller(PostController::class)->group(function(){
             Route::get('/', 'list')->name('list');
             Route::get('/{post}', 'Show')->name('Show');
-            Route::post('/{post}', 'Comment')->name('Comment');
-            Route::post('/{post}', 'Like')->name('Like');
+            Route::post('/{post}/comments', 'Comment')->name('Comment');
+            Route::post('/{post}/likes', 'Like')->name('Like');
         });
     });
 
