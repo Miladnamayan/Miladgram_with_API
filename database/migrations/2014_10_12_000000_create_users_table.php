@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('image')->nullable()->unique();
             $table->string('name');
             $table->string('password');
-            $table->string('role')->nullable()->default('Public_User');
+            // $table->string('role')->nullable()->default('Public_User');
+            $table->enum('role', ['user', 'admin', 'author'])->default('user');
             $table->boolean('status')->nullable()->default(0);
             $table->rememberToken();
             $table->timestamps();

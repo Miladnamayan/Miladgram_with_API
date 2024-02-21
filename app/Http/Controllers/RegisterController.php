@@ -12,17 +12,17 @@ use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
-   public function Register(UserRequest $request){
+   public function register(UserRequest $request){
 
-    $imageName=Carbon::now()->microsecond .'.' . $request->image->extension();
-    $request->image->storeAs('image/users',$imageName,'public');
+    // $imageName=Carbon::now()->microsecond .'.' . $request->image->extension();
+    // $request->image->storeAs('image/users',$imageName,'public');
 
         $user=User::create([
             'name' => $request['name'],
             'email' => $request['email'],
             'password' => $request['password'],
             'role' => $request['role'],
-            'image' => $imageName,
+            // 'image' => $imageName,
         ]);
         $token = $user->createToken('Register_Token');
 

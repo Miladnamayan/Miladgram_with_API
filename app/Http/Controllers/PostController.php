@@ -41,13 +41,11 @@ class PostController extends ApiController
 
         //TODO use paginaion for comments or limit comments then create anther route
         // to paginate comments of a post
-        // $pageCount = request()->get('page_count') ?? 3;
-        // $query = Post::query();
+
 
         $post->load('comments');
         $post->loadCount('comments', 'likes');
-        // $post= $query->paginate($pageCount);
-        // $post=Post:: paginate($pageCount);
+
         return new PostResource($post);
         // return $this->SuccessResponse([
         //     'post'=>new PostResource($post),
@@ -65,7 +63,7 @@ class PostController extends ApiController
         return $this->SuccessResponse(new CommentResource($Comment),'Create Comment Successful',201);
     }
 
-    public function Like(Post $post)
+    public function like(Post $post)
     {
         $post->likes()->firstOrCreate([
             'user_id' => Auth::user()->id

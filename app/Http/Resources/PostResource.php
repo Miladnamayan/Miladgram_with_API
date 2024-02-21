@@ -5,6 +5,8 @@ namespace App\Http\Resources;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
+
 
 class PostResource extends JsonResource
 {
@@ -22,7 +24,8 @@ class PostResource extends JsonResource
             'post_status'=>$this->post_status,
             'title'=>strtoupper($this->title),
             'body'=>$this->body,
-            'picture'=>$this->picture,
+            // 'picture'=>$this->picture,
+            'picture'=> Storage::disk('public')->url($this->picture),
             'Number_of_likes' => $this->whenCounted('likes'),
             'Number_of_comments' =>  $this->whenCounted('comments'),
             'user_id'=>$this->user_id,

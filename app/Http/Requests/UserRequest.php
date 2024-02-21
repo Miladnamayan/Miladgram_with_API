@@ -23,15 +23,9 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'email' => 'required|email|max:255|unique:Users,email',
-            // 'email' => [
-            //     'required',
-            //     'email',
-            //     'max:255',
-            //     Rule::unique('users')->ignore($this->id),
-            // ],
+
             'email' => 'required|email|max:255|',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            // 'image' => 'required|image|unique:users,image',
             'name' => 'string|min:4|max:20',
             'password' => 'required|min:8',
             'confirm_password'=> 'required|same:password',

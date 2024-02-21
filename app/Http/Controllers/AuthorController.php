@@ -7,6 +7,7 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class AuthorController extends ApiController
@@ -15,7 +16,7 @@ class AuthorController extends ApiController
     /**
      * Show the form for creating a new resource.
      */
-    public function Create(PostRequest $request){
+    public function create(PostRequest $request){
             //  چه کد زیر رو بزارم چه نزارم ، کد زیر اجرا میشه؟
             // if($request->failedValidation){
             //     return $this->ErrorResponse($request->messages(),422);
@@ -28,8 +29,8 @@ class AuthorController extends ApiController
         $post= Post::Create([
             'title'=>  $request->title,
             'body'=> $request->body,
-            'picture'=> $pictureName,
-            'user_id'=> $request->user_id,
+            'picture'=> 'picture/posts/' . $pictureName,
+            'user_id'=> Auth::id(),
             'category_id'=> $request->category_id,
         ]);
         return $this->SuccessResponse(new PostResource($post),'Create Post Successful',201);
@@ -78,7 +79,7 @@ class AuthorController extends ApiController
     }
 
 
-    public function Permission(post $post)
+    public function permission(post $post)
     {
         // use policy
         // don't use else if you use return in your if statement

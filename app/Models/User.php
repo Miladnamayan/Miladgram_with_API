@@ -24,6 +24,7 @@ class User extends Authenticatable
         'image',
         'role',
         'status',
+        'email_verified_at'
     ];
 
     /**
@@ -48,5 +49,13 @@ class User extends Authenticatable
 
     public function posts(){
         return $this->hasMany(post::class , 'user_id');
+    }
+
+    public function comments(){
+        return $this->hasMany(Comment::class);
+    }
+
+    public function likes(){
+        return $this->hasMany(Like::class);
     }
 }

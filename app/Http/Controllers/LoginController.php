@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginController extends ApiController
 {
-    public function Login(UserRequest $request){
+    public function login(UserRequest $request){
         $user = User::where('email', $request->email)->first();
 
         if(!$user){
