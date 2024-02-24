@@ -11,7 +11,14 @@ class UserController extends ApiController
     // use camelCase for your function name
     public function list(){
         //TODO add some filter and paginatin for this list
-        return response()->json(User::all(),200);
+        $users= User::all();
+        return response()->json($users,200);
+        // return response()->json(User::all(),200);
+    }
+    
+    public function show(User $user){
+
+        return new UserResource($user);
     }
 
     public function delete(User $user)

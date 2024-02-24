@@ -16,72 +16,97 @@ class UserTest extends TestCase
     use RefreshDatabase, WithFaker;
 
 
-    public function testShowListOfUsersForAdmin(): void
+    private $user;
+    private $users;
+    private $admin;
+    private $author;
+    private $nonAdminRoles;
+    private $nonAuthorRoles;
+
+
+
+    public function setUp():void
     {
-        // $admin=User::factory()->state(['role'=>'admin'])->create();
-        // $admin=User::factory()->admin()->create()->role;
-        $admin=User::factory()->admin()->create();
-        // $users=User::factory()->count(2)->create();
-        $users=User::factory()->create();
-
-        Sanctum::actingAs($admin);
-        $response = $this->getJson(route('admin.list'));
-
-
-        // dd($users->count());
-        // dd(User::all());
-        $response
-        ->assertStatus(200)
-        ->assertJsonIsArray()
-        // ->assertJsonCount(3)
-        ->assertJsonFragment(['role' => 'admin'])
-        ->assertJson([ $admin->toArray()])
-        ->assertJsonStructure([
-            '*' => [
-                'id',
-                'email',
-                'name',
-                'role'
-            ]
-        ]);
+        parent::setUp();
+        $this->user = User::factory()->create(['name'=>'MILAD']);
+        $this->users = User::factory()->count(2)->create();
+        $this->admin = User::factory()->admin()->create(['name'=>'ADMIN']);
+        $this->author = User::factory()->author()->create(['name'=>'AUTHOR']);
+        $this->nonAdminRoles =User::factory()->state(['role'=> Arr::random(['user', 'author'])])->create();
+        $this->nonAuthorRoles =User::factory()->state(['role'=> Arr::random(['user', 'admin'])])->create();
     }
 
-    public function testDontShowListOfUsersForOtherUsers(): void
+
+    public function testShowListOfAllUsersForAdmin(): void
     {
-        $otherUsers=User::factory()->state(['role'=> Arr::random(['user', 'author'])])->create();
-        // $users=User::factory()->count(5)->create();
-        Sanctum::actingAs($otherUsers);
+        Sanctum::actingAs($this->admin);
         $response = $this->getJson(route('admin.list'));
-        // $response->assertStatus(401);
+        $this->assertEquals('MILAD',$response->json()[0]['name']);
+        $this->assertEquals('admin',$response->json()[3]['role']);
+        $this->assertEquals(5,count( $response->json()));
+        $response
+        ->assertStatus(200)
+        ->assertJsonStructure([
+            '*' =>[
+            'id',
+            'email',
+            'name',
+            'role'
+        ]]);
+    }
+
+    public function testDontShowListOfUsersForNonAdminRoles(): void
+    {
+        Sanctum::actingAs($this->nonAdminRoles);
+        $response = $this->getJson(route('admin.list'));
+        $response->assertStatus(403);
+    }
+
+    public function testShowAUserForAdmin(): void
+    {
+        Sanctum::actingAs($this->admin);
+        $response = $this->getJson(route('admin.show',$this->user))
+            ->assertStatus(200)
+            ->assertOk()
+            ->json();
+        $this->assertEquals($response['name'],$this->user->name);
+    }
+
+    public function testDontShowAUsersForNonAdminRoles(): void
+    {
+        Sanctum::actingAs($this->nonAdminRoles);
+        $response = $this->getJson(route('admin.show',$this->user));
         $response->assertStatus(403);
     }
 
     public function testDeleteUserForAdmin(): void
     {
-        $admin=User::factory()->admin()->create();
-        $user=User::factory()->create();
-        Sanctum::actingAs($admin);
-        $response = $this->deleteJson(route('admin.delete',$user->id));
+        Sanctum::actingAs($this->admin);
+        $response = $this->deleteJson(route('admin.delete',$this->user->id));
         $response->assertStatus(200);
-
-        $this->assertDatabaseMissing($user->getTable(), [
-            'id' => $user->id,
+        $this->assertDatabaseMissing($this->user->getTable(), [
+            'id' => $this->user->id,
         ]);
     }
 
-    public function testNotAllowingDeletionUserForOtherUsers(): void
+    public function testNotAllowingDeletionUserForNonAdminRoless(): void
     {
-        $otherUsers=User::factory()->state(['role'=> Arr::random(['user', 'author'])])->create();
-        $user=User::factory()->create();
-        Sanctum::actingAs($otherUsers);
-        $response = $this->deleteJson(route('admin.delete',$user->id));
+        Sanctum::actingAs($this->nonAdminRoles);
+        $response = $this->deleteJson(route('admin.delete',$this->user->id));
         $response->assertStatus(403);
-        $this->assertDatabaseHas($user->getTable(), [
-            'id' => $user->id,
+        $this->assertDatabaseHas($this->user->getTable(), [
+            'id' => $this->user->id,
         ]);
     }
 
-
-
+    public function testAcceptUserForAdmin(): void
+    {
+        Sanctum::actingAs($this->admin);
+        $response = $this->deleteJson(route('admin.delete',$this->user->id));
+        $response->assertStatus(200);
+        $this->assertDatabaseMissing($this->user->getTable(), [
+            'id' => $this->user->id,
+        ]);
+    }
 
 }

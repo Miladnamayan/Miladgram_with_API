@@ -17,6 +17,7 @@ Route::prefix('miladgram')->group(function(){
 
     Route::prefix('admin')->name('admin.')->controller(UserController::class)->middleware('auth:sanctum','admin')->group(function(){
         Route::get('/', 'list')->name('list');
+        Route::get('/{user}', 'show')->name('show');
         Route::delete('/{user}', 'delete')->name('delete');
         Route::post('/{user}', 'accept')->name('accept');
     });
